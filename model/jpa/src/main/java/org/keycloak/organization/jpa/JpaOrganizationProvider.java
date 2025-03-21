@@ -481,6 +481,31 @@ public class JpaOrganizationProvider implements OrganizationProvider {
     }
 
     @Override
+    public OrganizationModel getManagingOrganization(UserModel member) {
+        if (member == null) {
+            return null;
+        }
+
+        UserEntity userEntity = em.find(UserEntity.class, member.getId());
+        if (userEntity == null) {
+            return null;
+        }
+
+        OrganizationProvider organizations = session.getProvider(OrganizationProvider.class);
+        GroupProvider groups = session.groups();
+        try {
+            String groupId = em.createNamedQuery("getManagingGroupsByMember", String.class)
+                    .setParameter("user", userEntity)
+                    .getSingleResult();
+
+            GroupModel group = groups.getGroupById(getRealm(), groupId);
+            return organizations.getById(group.getName());
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    @Override
     public boolean removeMember(OrganizationModel organization, UserModel member) {
         throwExceptionIfObjectIsNull(organization, "organization");
         throwExceptionIfObjectIsNull(member, "member");

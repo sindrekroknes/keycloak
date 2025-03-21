@@ -248,6 +248,8 @@ public interface OrganizationProvider extends Provider {
         return getMemberById(organization, user.getId()) != null;
     }
 
+    OrganizationModel getManagingOrganization(UserModel member);
+
     /**
      * <p>Removes a member from the organization.
      *

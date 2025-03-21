@@ -37,6 +37,7 @@ import org.keycloak.representations.idm.MembershipType;
 @NamedQueries({
         @NamedQuery(name="userMemberOf", query="select m from UserGroupMembershipEntity m where m.user = :user and m.groupId = :groupId"),
         @NamedQuery(name="userGroupMembership", query="select m from UserGroupMembershipEntity m where m.user = :user"),
+        @NamedQuery(name="userManagedGroupMembership", query="select m from UserGroupMembershipEntity m where m.user = :user and m.membershipType = 'MANAGED'"),
         @NamedQuery(name="groupMembership", query="select g.user from UserGroupMembershipEntity g where g.groupId = :groupId order by g.user.username"),
         @NamedQuery(name="groupMembershipByUser", query="select g.user from UserGroupMembershipEntity g where g.groupId = :groupId and " +
                 "(g.user.username = :search or g.user.email = :search or g.user.firstName = :search or g.user.lastName = :search) order by g.user.username"),

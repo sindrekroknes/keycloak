@@ -47,6 +47,7 @@ import org.keycloak.utils.StringUtil;
         @NamedQuery(name="getCount", query="select count(o) from OrganizationEntity o where o.realmId = :realmId"),
         @NamedQuery(name="deleteOrganizationsByRealm", query="delete from OrganizationEntity o where o.realmId = :realmId"),
         @NamedQuery(name="getGroupsByMember", query="select m.groupId from UserGroupMembershipEntity m join GroupEntity g on g.id = m.groupId where g.type = 1 and m.user.id = :userId"),
+        @NamedQuery(name="getManagingGroupsByMember", query="select m.groupId from UserGroupMembershipEntity m join GroupEntity g on g.id = m.groupId where g.type = 1 and m.user.id = :userId and m.membershipType = 'MANAGED'"),
         @NamedQuery(name="getGroupsByFederatedMember", query="select m.groupId from FederatedUserGroupMembershipEntity m join GroupEntity g on g.id = m.groupId where g.type = 1 and m.userId = :userId")
 })
 public class OrganizationEntity {
