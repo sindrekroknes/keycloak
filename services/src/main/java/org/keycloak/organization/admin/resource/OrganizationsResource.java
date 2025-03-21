@@ -50,6 +50,7 @@ import org.keycloak.organization.OrganizationProvider;
 import org.keycloak.organization.utils.Organizations;
 import org.keycloak.organization.validation.OrganizationsValidation;
 import org.keycloak.organization.validation.OrganizationsValidation.OrganizationValidationException;
+import org.keycloak.representations.idm.MembershipRepresentation;
 import org.keycloak.representations.idm.OrganizationRepresentation;
 import org.keycloak.services.ErrorResponse;
 import org.keycloak.services.resources.KeycloakOpenAPI;
@@ -177,7 +178,7 @@ public class OrganizationsResource {
     @NoCache
     @Tag(name = KeycloakOpenAPI.Admin.Tags.ORGANIZATIONS)
     @Operation(summary = "Returns the organizations associated with the user that has the specified id")
-    public Stream<OrganizationRepresentation> getOrganizations(@PathParam("member-id") String memberId) {
+    public Stream<MembershipRepresentation> getOrganizations(@PathParam("member-id") String memberId) {
         return new OrganizationMemberResource(session, null, adminEvent).getOrganizations(memberId);
     }
 }
