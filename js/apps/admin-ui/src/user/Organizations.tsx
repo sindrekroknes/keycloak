@@ -88,17 +88,13 @@ export const Organizations = ({ user }: OrganizationProps) => {
       const userOrganizations =
         await adminClient.organizations.memberOrganizations({ userId: id! });
 
-      const userOrganizationsWithMembershipTypes = userOrganizations.map((org) => {
-          org.membershipType = capitalizeFirstLetterFormatter()(org.membershipType);
-          return org;
+      let filteredOrgs = userOrganizations.map((org) => {
+        org.membershipType = capitalizeFirstLetterFormatter()(org.membershipType) as string;
+        return org;
       });
-
-      let filteredOrgs = userOrganizationsWithMembershipTypes;
       if (filteredMembershipTypes.length > 0) {
         filteredOrgs = filteredOrgs.filter((org) =>
-          org.membershipType?.some((type) =>
-            filteredMembershipTypes.includes(type as string),
-          ),
+            filteredMembershipTypes.includes(org.membershipType as string),
         );
       }
 

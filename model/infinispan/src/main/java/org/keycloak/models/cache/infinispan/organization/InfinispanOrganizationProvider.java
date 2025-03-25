@@ -289,6 +289,29 @@ public class InfinispanOrganizationProvider implements OrganizationProvider {
     }
 
     @Override
+    public OrganizationModel getManagingOrganization(UserModel user) {
+        if (userCache == null) {
+            return getDelegate().getManagingOrganization(user);
+        }
+
+        if (user == null) {
+            return null;
+        }
+
+        String cacheKey = cacheKeyManaging(getRealm(), user);
+        CachedOrganizationIds cached = userCache.getCache().get(cacheKey, CachedOrganizationIds.class);
+
+        if (cached == null || isUserCacheKeyInvalid(cacheKey)) {
+            Long loaded = userCache.getCache().getCurrentRevision(cacheKey);
+            OrganizationModel model = getDelegate().getManagingOrganization(user);
+            cached = new CachedOrganizationIds(loaded, cacheKey, getRealm(), model);
+            userCache.getCache().addRevisioned(cached, userCache.getStartupRevision());
+        }
+
+        return cached.getOrgIds().stream().map(this::getById).findFirst().orElse(null);
+    }
+
+    @Override
     public boolean addIdentityProvider(OrganizationModel organization, IdentityProviderModel identityProvider) {
         boolean added = getDelegate().addIdentityProvider(organization, identityProvider);
         if (added) {
@@ -394,10 +417,15 @@ public class InfinispanOrganizationProvider implements OrganizationProvider {
         return realm.getId() + ".org." + organization.getId() + ".member." + user.getId() + ".membership";
     }
 
+    private String cacheKeyManaging(RealmModel realm, UserModel user) {
+        return realm.getId() + ".user." + user.getId() + "managing.org";
+    }
+
     void registerMemberInvalidation(OrganizationModel organization, UserModel member) {
         if (userCache != null) {
             userCache.registerInvalidation(cacheKeyByMember(member));
             userCache.registerInvalidation(cacheKeyMembership(getRealm(), organization, member));
+            userCache.registerInvalidation(cacheKeyManaging(getRealm(), member));
         }
         if (realmCache != null) {
             realmCache.registerInvalidation(cacheKeyOrgMemberCount(getRealm(), organization));
